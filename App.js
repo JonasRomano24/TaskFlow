@@ -1,11 +1,12 @@
-import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function App() {
+export default function HomeScreen() {
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+      <Text style={styles.title}>TaskFlow</Text>
+      <Text style={styles.subtitle}>
+        Checkpoint 1: Estructura Base
+      </Text>
     </View>
   );
 }
@@ -13,8 +14,19 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#2563EB", // Azul representando TaskFlow
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  title: {
+    fontSize: 42,
+    fontWeight: "bold",
+    color: "#FFFFFF",
+    marginBottom: 12,
+  },
+  subtitle: {
+    fontSize: 18,
+    color: "#E5E7EB",
+    textAlign: "center",
   },
 });
