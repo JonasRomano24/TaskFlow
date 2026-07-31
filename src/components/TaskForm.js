@@ -6,296 +6,505 @@ import {
     TouchableOpacity,
     StyleSheet,
     Alert,
-    KeyboardAvoidingView,
-    Platform,
 } from "react-native";
 
 import colors from "../constants/colors";
 
-export default function TaskForm() {
+
+const TaskForm = () => {
+
+    const categories = [
+        "Trabajo",
+        "Estudio",
+        "Personal",
+    ];
+
+
+    // Estados locales de cada campo
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [category, setCategory] = useState("Trabajo");
 
+
     const [errors, setErrors] = useState({});
 
-    const [touched, setTouched] = useState({});
+    const [focusedInput, setFocusedInput] = useState(null);
 
-    const [focused, setFocused] = useState("");
 
-    const validate = () => {
+
+    const validateForm = () => {
+
         let newErrors = {};
 
+
+        // Validación título
         if (!title.trim()) {
+
             newErrors.title = "El título es obligatorio";
+
         } else if (title.trim().length < 5) {
-            newErrors.title = "Debe tener al menos 5 caracteres";
+
+            newErrors.title =
+                "El título debe tener mínimo 5 caracteres";
+
         }
 
+
+
+        // Validación descripción
         if (!description.trim()) {
-            newErrors.description = "La descripción es obligatoria";
+
+            newErrors.description =
+                "La descripción es obligatoria";
+
         } else if (description.trim().length < 10) {
-            newErrors.description = "Debe tener al menos 10 caracteres";
+
+            newErrors.description =
+                "La descripción debe tener mínimo 10 caracteres";
+
         }
+
+
+
+        // Validación categoría
+        if (!category) {
+
+            newErrors.category =
+                "Debe seleccionar una categoría";
+
+        }
+
 
         setErrors(newErrors);
 
+
         return Object.keys(newErrors).length === 0;
+
     };
 
+
+
+
+    // Simulación de API
     const handleAddTask = () => {
-        setTouched({
-            title: true,
-            description: true,
-        });
 
-        if (!validate()) return;
 
-        const task = {
+        if (!validateForm()) {
+            return;
+        }
+
+
+
+        const newTask = {
+
+            id: Date.now(),
+
             title,
+
             description,
+
             category,
-            createdAt: new Date(),
+
+            createdAt: new Date().toISOString(),
+
         };
 
-        console.log(task);
+
+
+        console.log("Nueva tarea:", newTask);
+
+
 
         Alert.alert(
             "Éxito",
             "Tarea capturada localmente"
         );
 
+
+
+        // Limpieza de campos
+
         setTitle("");
+
         setDescription("");
+
         setCategory("Trabajo");
 
-        setErrors({});
-        setTouched({});
     };
 
+
+
+
     return (
-        <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
-        >
-            <Text style={styles.title}>
-                Nueva tarea
+
+        <View>
+
+
+            <Text style={styles.label}>
+                Título
             </Text>
 
+
             <TextInput
+
                 style={[
                     styles.input,
-                    focused === "title" && styles.focusInput,
-                    errors.title && touched.title && styles.errorInput,
+
+                    focusedInput === "title" &&
+                    styles.inputFocused,
+
+                    errors.title &&
+                    styles.inputError
                 ]}
-                placeholder="Título"
+
+                placeholder="Ingrese título"
 
                 value={title}
 
-                onChangeText={setTitle}
 
-                autoCapitalize="sentences"
+                onChangeText={(text) => {
 
-                selectionColor={colors.primary}
+                    setTitle(text);
 
-                returnKeyType="next"
-
-                onFocus={() => setFocused("title")}
-
-                onBlur={() => {
-                    setFocused("");
-                    setTouched({
-                        ...touched,
-                        title: true,
+                    setErrors({
+                        ...errors,
+                        title: null
                     });
+
                 }}
+
+
+                onFocus={() => setFocusedInput("title")}
+
+                onBlur={() => setFocusedInput(null)}
+
             />
 
-            {errors.title && touched.title && (
+
+            {
+                errors.title &&
+
                 <Text style={styles.errorText}>
                     {errors.title}
                 </Text>
-            )}
+            }
+
+
+
+
+
+            <Text style={styles.label}>
+                Descripción
+            </Text>
+
 
             <TextInput
+
                 style={[
                     styles.input,
+
                     styles.textArea,
-                    focused === "description" && styles.focusInput,
+
+                    focusedInput === "description" &&
+                    styles.inputFocused,
+
                     errors.description &&
-                    touched.description &&
-                    styles.errorInput,
+                    styles.inputError
                 ]}
-                placeholder="Descripción"
+
+
+                placeholder="Ingrese descripción"
+
 
                 multiline
 
-                numberOfLines={5}
 
                 value={description}
 
-                onChangeText={setDescription}
 
-                selectionColor={colors.primary}
 
-                onFocus={() => setFocused("description")}
+                onChangeText={(text) => {
 
-                onBlur={() => {
-                    setFocused("");
-                    setTouched({
-                        ...touched,
-                        description: true,
+                    setDescription(text);
+
+                    setErrors({
+                        ...errors,
+                        description: null
                     });
+
                 }}
+
+
+
+                onFocus={() => setFocusedInput("description")}
+
+
+                onBlur={() => setFocusedInput(null)}
+
             />
 
-            {errors.description &&
-                touched.description && (
-                    <Text style={styles.errorText}>
-                        {errors.description}
-                    </Text>
-                )}
+
+
+            {
+                errors.description &&
+
+                <Text style={styles.errorText}>
+                    {errors.description}
+                </Text>
+
+            }
+
+
+
+
 
             <Text style={styles.label}>
                 Categoría
             </Text>
 
-            <View style={styles.categories}>
 
-                {["Trabajo", "Estudio", "Personal"].map(
-                    (item) => (
+
+            <View style={styles.categoriesContainer}>
+
+
+                {
+                    categories.map((item) => (
+
                         <TouchableOpacity
+
                             key={item}
+
                             style={[
                                 styles.categoryButton,
+
                                 category === item &&
-                                styles.categorySelected,
+                                styles.categorySelected
                             ]}
-                            onPress={() => setCategory(item)}
+
+
+                            onPress={() => {
+
+                                setCategory(item);
+
+                                setErrors({
+                                    ...errors,
+                                    category: null
+                                });
+
+                            }}
+
                         >
+
+
                             <Text
+
                                 style={[
                                     styles.categoryText,
-                                    category === item && {
-                                        color: "#fff",
-                                    },
+
+                                    category === item &&
+                                    styles.categoryTextSelected
                                 ]}
+
                             >
+
                                 {item}
+
                             </Text>
+
+
                         </TouchableOpacity>
-                    )
-                )}
+
+                    ))
+                }
+
+
             </View>
 
-            <TouchableOpacity
-                style={styles.saveButton}
-                onPress={handleAddTask}
-            >
-                <Text style={styles.saveText}>
-                    Guardar tarea
+
+
+            {
+                errors.category &&
+
+                <Text style={styles.errorText}>
+                    {errors.category}
                 </Text>
+
+            }
+
+
+
+
+
+            <TouchableOpacity
+
+                style={styles.button}
+
+                onPress={handleAddTask}
+
+            >
+
+                <Text style={styles.buttonText}>
+                    Guardar
+                </Text>
+
+
             </TouchableOpacity>
-        </KeyboardAvoidingView>
+
+
+        </View>
+
     );
-}
+
+};
+
+
 
 const styles = StyleSheet.create({
-    title: {
-        fontSize: 30,
-        fontWeight: "bold",
+
+    label: {
+
         color: colors.text,
-        marginBottom: 25,
-        textAlign: "center",
-    },
 
-    input: {
-        borderWidth: 1,
-        borderColor: "#d9d9d9",
+        fontSize: 15,
 
-        borderRadius: 12,
-
-        padding: 14,
-
-        backgroundColor: "#fff",
+        fontWeight: "600",
 
         marginBottom: 6,
 
-        color: colors.text,
+        marginTop: 12,
+
     },
 
-    focusInput: {
-        borderColor: colors.primary,
-    },
 
-    errorInput: {
-        borderColor: "red",
-    },
-
-    textArea: {
-        height: 120,
-        textAlignVertical: "top",
-    },
-
-    errorText: {
-        color: "red",
-        marginBottom: 12,
-        marginLeft: 5,
-        fontSize: 12,
-    },
-
-    label: {
-        fontWeight: "600",
-        color: colors.text,
-        marginTop: 10,
-        marginBottom: 12,
-    },
-
-    categories: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        marginBottom: 25,
-    },
-
-    categoryButton: {
-        flex: 1,
-
-        marginHorizontal: 4,
-
-        padding: 12,
-
-        borderRadius: 10,
+    input: {
 
         borderWidth: 1,
 
+        borderColor: "#D1D5DB",
+
+        borderRadius: 12,
+
+        padding: 12,
+
+        backgroundColor: "#FFFFFF",
+
+        color: colors.text,
+
+    },
+
+
+    inputFocused: {
+
         borderColor: colors.primary,
 
-        alignItems: "center",
     },
+
+
+    inputError: {
+
+        borderColor: "#DC2626",
+
+    },
+
+
+    textArea: {
+
+        height: 100,
+
+        textAlignVertical: "top",
+
+    },
+
+
+    categoriesContainer: {
+
+        flexDirection: "row",
+
+        gap: 10,
+
+    },
+
+
+    categoryButton: {
+
+        borderWidth: 1,
+
+        borderColor: "#D1D5DB",
+
+        paddingVertical: 10,
+
+        paddingHorizontal: 15,
+
+        borderRadius: 20,
+
+        backgroundColor: "#FFFFFF",
+
+    },
+
 
     categorySelected: {
+
         backgroundColor: colors.primary,
+
+        borderColor: colors.primary,
+
     },
+
 
     categoryText: {
-        color: colors.primary,
-        fontWeight: "600",
+
+        color: colors.text,
+
     },
 
-    saveButton: {
+
+    categoryTextSelected: {
+
+        color: "#FFFFFF",
+
+        fontWeight: "bold",
+
+    },
+
+
+    errorText: {
+
+        color: "#DC2626",
+
+        fontSize: 13,
+
+        marginTop: 5,
+
+    },
+
+
+    button: {
+
+        marginTop: 20,
+
         backgroundColor: colors.primary,
 
-        padding: 16,
+        padding: 15,
 
         borderRadius: 12,
 
         alignItems: "center",
+
     },
 
-    saveText: {
-        color: "#fff",
+
+    buttonText: {
+
+        color: "#FFFFFF",
+
+        fontSize: 16,
 
         fontWeight: "bold",
 
-        fontSize: 17,
     },
+
+
 });
+
+
+export default TaskForm;
