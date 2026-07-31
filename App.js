@@ -1,8 +1,6 @@
-import React from 'react';
-import ProfileScreen from './src/screens/ProfileScreen';
+import React from "react";
+import AddTaskScreen from "./src/screens/AddTaskScreen";
 
 export default function App() {
-  return (
-    <ProfileScreen />
-  );
+  return <AddTaskScreen />;
 }
