@@ -143,3 +143,20 @@ ahora hago:
 ```js
 navigation.navigate('TaskList');
 ```
+
+## Capturas
+
+**Lista vacía**
+![Lista vacía](docs/screenshots/01-lista-vacia.jpg)
+
+**Nueva tarea**
+![Nueva tarea](docs/screenshots/02-nueva-tarea.jpg)
+
+**Mis tareas**
+![Mis tareas](docs/screenshots/03-mis-tareas.jpg)
+
+**Detalle de tarea**
+![Detalle de tarea](docs/screenshots/04-detalle-tarea.jpg)
+
+**Mi Perfil**
+![Mi Perfil](docs/screenshots/05-mi-perfil.jpg)
