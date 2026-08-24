@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useLayoutEffect } from "react";
 import {
     View,
     Text,
@@ -18,6 +18,24 @@ const HomeScreen = () => {
 
     const navigation = useNavigation();
     const { tasks } = useTasks();
+
+    // El botón "+ Nueva" ahora vive en el header nativo de la pantalla,
+    // no en un header propio (así el título de arriba queda consistente
+    // con el resto de las pantallas).
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <TouchableOpacity
+                    style={styles.addButton}
+                    onPress={() => navigation.navigate("TaskForm")}
+                >
+                    <Text style={styles.addButtonText}>
+                        + Nueva
+                    </Text>
+                </TouchableOpacity>
+            ),
+        });
+    }, [navigation]);
 
     const renderTask = ({ item }) => {
 
@@ -60,33 +78,14 @@ const HomeScreen = () => {
 
     return (
 
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={styles.container} edges={["left", "right", "bottom"]}>
 
-            <View style={styles.header}>
-
-                <View>
-                    <Text style={styles.title}>
-                        Mis tareas
-                    </Text>
-
-                    <Text style={styles.subtitle}>
-                        {tasks.length === 1
-                            ? "1 tarea pendiente"
-                            : `${tasks.length} tareas pendientes`
-                        }
-                    </Text>
-                </View>
-
-                <TouchableOpacity
-                    style={styles.addButton}
-                    onPress={() => navigation.navigate("TaskForm")}
-                >
-                    <Text style={styles.addButtonText}>
-                        + Nueva
-                    </Text>
-                </TouchableOpacity>
-
-            </View>
+            <Text style={styles.subtitle}>
+                {tasks.length === 1
+                    ? "1 tarea pendiente"
+                    : `${tasks.length} tareas pendientes`
+                }
+            </Text>
 
             {
                 tasks.length === 0 ? (
@@ -122,36 +121,25 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
 
-    header: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: 20,
-        paddingTop: 10,
-    },
-
-    title: {
-        fontSize: 26,
-        fontWeight: "bold",
-        color: colors.text,
-    },
-
     subtitle: {
-        marginTop: 4,
+        marginTop: 14,
+        marginBottom: 8,
         fontSize: 14,
         color: colors.textSecondary,
     },
 
     addButton: {
         backgroundColor: colors.primary,
-        paddingVertical: 10,
-        paddingHorizontal: 14,
-        borderRadius: 12,
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+        borderRadius: 10,
+        marginRight: 12,
     },
 
     addButtonText: {
         color: "#FFFFFF",
         fontWeight: "bold",
+        fontSize: 13,
     },
 
     listContent: {

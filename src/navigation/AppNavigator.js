@@ -29,9 +29,7 @@ function TaskStackNavigator() {
             <Stack.Screen
                 name="TaskList"
                 component={HomeScreen}
-                // HomeScreen ya renderiza su propio header (título + "+ Nueva"),
-                // así que ocultamos el header nativo acá para no duplicarlo.
-                options={{ headerShown: false }}
+                options={{ title: "Mis Tareas" }}
             />
 
             <Stack.Screen
