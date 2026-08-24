@@ -101,3 +101,45 @@ Se creó un archivo de constantes para mantener una identidad visual consistente
 ### Visualización
 
 Actualmente la aplicación permite visualizar la `ProfileScreen` funcionando correctamente mediante Expo.
+
+## Checkpoint 2 - Navegación
+
+Hasta este checkpoint el cambio de pantalla lo hacía a mano: un estado en
+`App.js` que decidía si mostrar "home" o "add", y adentro de `HomeScreen` otro
+estado más para mostrar el detalle de una tarea. Andaba, pero no era
+navegación real. Acá lo reemplacé por React Navigation.
+
+Quedó así:
+
+- Un Tab Navigator arriba de todo, con las pestañas **Home** y **Perfil**.
+- Adentro de Home metí un Stack Navigator: `TaskList` → `TaskDetail` → `TaskForm`.
+
+Ahora, al tocar una tarea, la pantalla de detalle se apila arriba de la
+lista, y si volvés atrás (con la flecha del header o con el botón "Volver")
+te devuelve exactamente a donde estabas. La pestaña Perfil queda afuera de
+todo ese stack, aparte.
+
+**Archivos nuevos:**
+
+- `src/navigation/AppNavigator.js`: el Tab Navigator y el Stack anidado.
+- `src/screens/TaskDetailScreen.js`: antes era un componente que `HomeScreen`
+  mostraba a mano con un estado local; ahora es una pantalla que recibe los
+  datos por parámetros.
+- `src/context/TasksContext.js`: para que `HomeScreen` y `AddTaskScreen`
+  compartan la lista de tareas sin pasarse props entre pantallas. Esto lo voy
+  a reemplazar por Redux en el próximo módulo.
+
+Al tocar una tarea en la lista:
+
+```js
+navigation.navigate('TaskDetail', { id: item.id, title: item.title });
+```
+
+Y `TaskDetailScreen` los recupera con `useRoute()`.
+
+Cuando guardás una tarea nueva, en vez de volver con un `onBack` como antes,
+ahora hago:
+
+```js
+navigation.navigate('TaskList');
+```

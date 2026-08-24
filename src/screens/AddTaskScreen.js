@@ -10,11 +10,24 @@ import {
 } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
 
 import TaskForm from "../components/TaskForm";
+import { useTasks } from "../context/TasksContext";
 import colors from "../constants/colors";
 
-export default function AddTaskScreen({ onTaskCreated, onBack }) {
+export default function AddTaskScreen() {
+
+    const navigation = useNavigation();
+    const { addTask } = useTasks();
+
+    const handleTaskCreated = (newTask) => {
+
+        addTask(newTask);
+
+        // Redirección programática pedida por la consigna del checkpoint.
+        navigation.navigate("TaskList");
+    };
 
     return (
 
@@ -42,12 +55,12 @@ export default function AddTaskScreen({ onTaskCreated, onBack }) {
                         </Text>
 
                         <TaskForm
-                            onTaskCreated={onTaskCreated}
+                            onTaskCreated={handleTaskCreated}
                         />
 
                         <TouchableOpacity
                             style={styles.backButton}
-                            onPress={onBack}
+                            onPress={() => navigation.goBack()}
                         >
                             <Text style={styles.backButtonText}>
                                 Volver a mis tareas

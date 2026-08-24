@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
     View,
     Text,
@@ -8,33 +8,28 @@ import {
 } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
 
 import EmptyState from "../components/EmptyState";
-import TaskDetail from "../components/TaskDetail";
+import { useTasks } from "../context/TasksContext";
 import colors from "../constants/colors";
 
-const HomeScreen = ({ tasks, onAddTask }) => {
+const HomeScreen = () => {
 
-    const [selectedTask, setSelectedTask] = useState(null);
-
-    if (selectedTask) {
-
-        return (
-            <SafeAreaView style={styles.container}>
-                <TaskDetail
-                    task={selectedTask}
-                    onBack={() => setSelectedTask(null)}
-                />
-            </SafeAreaView>
-        );
-    }
+    const navigation = useNavigation();
+    const { tasks } = useTasks();
 
     const renderTask = ({ item }) => {
 
         return (
             <TouchableOpacity
                 style={styles.taskCard}
-                onPress={() => setSelectedTask(item)}
+                onPress={() =>
+                    navigation.navigate("TaskDetail", {
+                        id: item.id,
+                        title: item.title,
+                    })
+                }
                 activeOpacity={0.7}
             >
 
@@ -84,7 +79,7 @@ const HomeScreen = ({ tasks, onAddTask }) => {
 
                 <TouchableOpacity
                     style={styles.addButton}
-                    onPress={onAddTask}
+                    onPress={() => navigation.navigate("TaskForm")}
                 >
                     <Text style={styles.addButtonText}>
                         + Nueva
