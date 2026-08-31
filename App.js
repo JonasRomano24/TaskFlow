@@ -1,13 +1,14 @@
 import React from "react";
+import { Provider } from "react-redux";
 
-import { TasksProvider } from "./src/context/TasksContext";
+import store from "./src/store/store";
 import AppNavigator from "./src/navigation/AppNavigator";
 
 export default function App() {
 
     return (
-        <TasksProvider>
+        <Provider store={store}>
             <AppNavigator />
-        </TasksProvider>
+        </Provider>
     );
 }

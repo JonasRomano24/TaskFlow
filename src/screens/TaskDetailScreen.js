@@ -4,21 +4,27 @@ import {
     Text,
     TouchableOpacity,
     StyleSheet,
+    Alert,
 } from "react-native";
 
 import { useRoute, useNavigation } from "@react-navigation/native";
+import { useSelector, useDispatch } from "react-redux";
 
-import { useTasks } from "../context/TasksContext";
+import { selectTaskById, toggleTaskStatus, deleteTask } from "../store/taskSlice";
 import colors from "../constants/colors";
 
 const TaskDetailScreen = () => {
 
     const route = useRoute();
     const navigation = useNavigation();
-    const { tasks } = useTasks();
+    const dispatch = useDispatch();
 
     const { id, title } = route.params;
-    const task = tasks.find((t) => t.id === id);
+
+    // Se lee directo del store con useSelector: si esta tarea cambia
+    // (por ejemplo, se completa desde acá), HomeScreen se entera solo,
+    // sin que nadie tenga que "avisarle".
+    const task = useSelector(selectTaskById(id));
 
     const formattedDate = task
         ? new Date(task.createdAt).toLocaleDateString("es-UY", {
@@ -27,6 +33,28 @@ const TaskDetailScreen = () => {
             year: "numeric",
         })
         : null;
+
+    const handleToggle = () => {
+        dispatch(toggleTaskStatus(id));
+    };
+
+    const handleDelete = () => {
+        Alert.alert(
+            "Eliminar tarea",
+            "¿Seguro que querés eliminar esta tarea?",
+            [
+                { text: "Cancelar", style: "cancel" },
+                {
+                    text: "Eliminar",
+                    style: "destructive",
+                    onPress: () => {
+                        dispatch(deleteTask(id));
+                        navigation.navigate("TaskList");
+                    },
+                },
+            ]
+        );
+    };
 
     return (
 
@@ -65,12 +93,52 @@ const TaskDetailScreen = () => {
                         </View>
 
                         <Text style={styles.label}>
+                            Estado
+                        </Text>
+
+                        <View
+                            style={[
+                                styles.statusBadge,
+                                task.completed && styles.statusBadgeDone,
+                            ]}
+                        >
+                            <Text
+                                style={[
+                                    styles.statusText,
+                                    task.completed && styles.statusTextDone,
+                                ]}
+                            >
+                                {task.completed ? "Completada" : "Pendiente"}
+                            </Text>
+                        </View>
+
+                        <Text style={styles.label}>
                             Fecha de creación
                         </Text>
 
                         <Text style={styles.date}>
                             {formattedDate}
                         </Text>
+
+                        <TouchableOpacity
+                            style={styles.toggleButton}
+                            onPress={handleToggle}
+                        >
+                            <Text style={styles.toggleButtonText}>
+                                {task.completed
+                                    ? "Marcar como pendiente"
+                                    : "Marcar como completada"}
+                            </Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={styles.deleteButton}
+                            onPress={handleDelete}
+                        >
+                            <Text style={styles.deleteButtonText}>
+                                Eliminar tarea
+                            </Text>
+                        </TouchableOpacity>
                     </>
                 ) : (
                     <Text style={styles.description}>
@@ -79,10 +147,10 @@ const TaskDetailScreen = () => {
                 )}
 
                 <TouchableOpacity
-                    style={styles.button}
+                    style={styles.backButton}
                     onPress={() => navigation.goBack()}
                 >
-                    <Text style={styles.buttonText}>
+                    <Text style={styles.backButtonText}>
                         Volver
                     </Text>
                 </TouchableOpacity>
@@ -166,12 +234,33 @@ const styles = StyleSheet.create({
         fontWeight: "600",
     },
 
+    statusBadge: {
+        alignSelf: "flex-start",
+        backgroundColor: "#E5E7EB",
+        paddingVertical: 8,
+        paddingHorizontal: 14,
+        borderRadius: 20,
+    },
+
+    statusBadgeDone: {
+        backgroundColor: "#DCFCE7",
+    },
+
+    statusText: {
+        color: colors.textSecondary,
+        fontWeight: "600",
+    },
+
+    statusTextDone: {
+        color: "#16A34A",
+    },
+
     date: {
         fontSize: 16,
         color: colors.text,
     },
 
-    button: {
+    toggleButton: {
         marginTop: 25,
         backgroundColor: colors.primary,
         padding: 15,
@@ -179,10 +268,36 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
 
-    buttonText: {
+    toggleButtonText: {
         color: "#FFFFFF",
         fontSize: 16,
         fontWeight: "bold",
+    },
+
+    deleteButton: {
+        marginTop: 12,
+        backgroundColor: "#FEE2E2",
+        padding: 15,
+        borderRadius: 12,
+        alignItems: "center",
+    },
+
+    deleteButtonText: {
+        color: "#DC2626",
+        fontSize: 16,
+        fontWeight: "bold",
+    },
+
+    backButton: {
+        marginTop: 15,
+        alignItems: "center",
+        padding: 12,
+    },
+
+    backButtonText: {
+        color: colors.primary,
+        fontWeight: "600",
+        fontSize: 15,
     },
 
 });

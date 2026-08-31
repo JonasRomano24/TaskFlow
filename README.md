@@ -144,6 +144,40 @@ ahora hago:
 navigation.navigate('TaskList');
 ```
 
+## Checkpoint 3 - Estado Global con Redux Toolkit
+
+Hasta acá las tareas vivían en `TasksContext` (un Context + `useState`), que
+el propio código dejaba claro que era temporal: "un puente hasta el Módulo 6".
+En este checkpoint ese puente se cae y todo pasa a un store de Redux Toolkit.
+
+Quedó así:
+
+- `src/store/taskSlice.js`: el slice `tasks`, con estado `{ items, filter }`
+  y los reducers `addTask`, `toggleTaskStatus`, `deleteTask` y `setFilter`.
+  El `id` único y la fecha de creación de cada tarea los genera el propio
+  reducer (con `prepare`), no el componente que dispara la acción.
+- `src/store/store.js`: `configureStore` con el reducer `tasks`.
+- `App.js`: ahora envuelve todo con `<Provider store={store}>` en vez de
+  `<TasksProvider>`.
+
+Las pantallas dejaron de manejar la lista con `useState`:
+
+- `HomeScreen` lee las tareas con `useSelector` (ya filtradas por el
+  filtro activo) y tiene tres chips (Todas / Pendientes / Completadas) que
+  hacen `dispatch(setFilter(...))`.
+- `AddTaskScreen` reemplazó `addTask` del Context por
+  `dispatch(addTask(...))`.
+- `TaskDetailScreen` agrega dos acciones nuevas: marcar la tarea como
+  completada/pendiente (`toggleTaskStatus`) y eliminarla (`deleteTask`).
+  Como todo sale del store, al volver a la lista el cambio ya está
+  reflejado sin pasar nada por props ni por parámetros de navegación.
+
+El filtro también vive en el store, así que si lo cambio en Home y navego
+a otra pestaña y vuelvo, sigue seleccionado — no se resetea como pasaría
+con un estado local del componente.
+
+**Dependencias nuevas:** `@reduxjs/toolkit` y `react-redux`.
+
 ## Capturas
 
 **Lista vacía**

@@ -9,15 +9,33 @@ import {
 
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
+import { useSelector, useDispatch } from "react-redux";
+import { Ionicons } from "@expo/vector-icons";
 
 import EmptyState from "../components/EmptyState";
-import { useTasks } from "../context/TasksContext";
+import {
+    selectFilteredTasks,
+    selectFilter,
+    setFilter,
+    toggleTaskStatus,
+} from "../store/taskSlice";
 import colors from "../constants/colors";
+
+const FILTERS = [
+    { value: "all", label: "Todas" },
+    { value: "pending", label: "Pendientes" },
+    { value: "completed", label: "Completadas" },
+];
 
 const HomeScreen = () => {
 
     const navigation = useNavigation();
-    const { tasks } = useTasks();
+    const dispatch = useDispatch();
+
+    // Antes esto salía de useTasks() (Context + useState local). Ahora
+    // sale del store: ni la lista ni el filtro viven en este componente.
+    const tasks = useSelector(selectFilteredTasks);
+    const activeFilter = useSelector(selectFilter);
 
     // El botón "+ Nueva" ahora vive en el header nativo de la pantalla,
     // no en un header propio (así el título de arriba queda consistente
@@ -51,25 +69,46 @@ const HomeScreen = () => {
                 activeOpacity={0.7}
             >
 
-                <View style={styles.taskInfo}>
+                <TouchableOpacity
+                    style={styles.checkbox}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    onPress={() => dispatch(toggleTaskStatus(item.id))}
+                >
+                    <Ionicons
+                        name={item.completed ? "checkmark-circle" : "ellipse-outline"}
+                        size={24}
+                        color={item.completed ? colors.primary : colors.textSecondary}
+                    />
+                </TouchableOpacity>
 
-                    <Text style={styles.taskTitle}>
-                        {item.title}
-                    </Text>
+                <View style={styles.taskContent}>
 
-                    <Text
-                        style={styles.taskDescription}
-                        numberOfLines={2}
-                    >
-                        {item.description}
-                    </Text>
+                    <View style={styles.taskInfo}>
 
-                </View>
+                        <Text
+                            style={[
+                                styles.taskTitle,
+                                item.completed && styles.taskTitleDone,
+                            ]}
+                        >
+                            {item.title}
+                        </Text>
 
-                <View style={styles.category}>
-                    <Text style={styles.categoryText}>
-                        {item.category}
-                    </Text>
+                        <Text
+                            style={styles.taskDescription}
+                            numberOfLines={2}
+                        >
+                            {item.description}
+                        </Text>
+
+                    </View>
+
+                    <View style={styles.category}>
+                        <Text style={styles.categoryText}>
+                            {item.category}
+                        </Text>
+                    </View>
+
                 </View>
 
             </TouchableOpacity>
@@ -80,10 +119,34 @@ const HomeScreen = () => {
 
         <SafeAreaView style={styles.container} edges={["left", "right", "bottom"]}>
 
+            <View style={styles.filterRow}>
+                {
+                    FILTERS.map((f) => (
+                        <TouchableOpacity
+                            key={f.value}
+                            style={[
+                                styles.filterChip,
+                                activeFilter === f.value && styles.filterChipActive,
+                            ]}
+                            onPress={() => dispatch(setFilter(f.value))}
+                        >
+                            <Text
+                                style={[
+                                    styles.filterChipText,
+                                    activeFilter === f.value && styles.filterChipTextActive,
+                                ]}
+                            >
+                                {f.label}
+                            </Text>
+                        </TouchableOpacity>
+                    ))
+                }
+            </View>
+
             <Text style={styles.subtitle}>
                 {tasks.length === 1
-                    ? "1 tarea pendiente"
-                    : `${tasks.length} tareas pendientes`
+                    ? "1 tarea"
+                    : `${tasks.length} tareas`
                 }
             </Text>
 
@@ -121,8 +184,38 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
 
-    subtitle: {
+    filterRow: {
+        flexDirection: "row",
+        gap: 8,
         marginTop: 14,
+    },
+
+    filterChip: {
+        borderWidth: 1,
+        borderColor: "#D1D5DB",
+        paddingVertical: 6,
+        paddingHorizontal: 14,
+        borderRadius: 20,
+        backgroundColor: colors.card,
+    },
+
+    filterChipActive: {
+        backgroundColor: colors.primary,
+        borderColor: colors.primary,
+    },
+
+    filterChipText: {
+        fontSize: 13,
+        fontWeight: "600",
+        color: colors.textSecondary,
+    },
+
+    filterChipTextActive: {
+        color: "#FFFFFF",
+    },
+
+    subtitle: {
+        marginTop: 12,
         marginBottom: 8,
         fontSize: 14,
         color: colors.textSecondary,
@@ -147,6 +240,8 @@ const styles = StyleSheet.create({
     },
 
     taskCard: {
+        flexDirection: "row",
+        alignItems: "flex-start",
         backgroundColor: colors.card,
         borderRadius: 16,
         padding: 18,
@@ -161,6 +256,15 @@ const styles = StyleSheet.create({
         },
     },
 
+    checkbox: {
+        marginRight: 12,
+        marginTop: 2,
+    },
+
+    taskContent: {
+        flex: 1,
+    },
+
     taskInfo: {
         marginBottom: 12,
     },
@@ -170,6 +274,11 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         color: colors.text,
         marginBottom: 6,
+    },
+
+    taskTitleDone: {
+        textDecorationLine: "line-through",
+        color: colors.textSecondary,
     },
 
     taskDescription: {

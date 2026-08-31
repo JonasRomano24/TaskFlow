@@ -70,19 +70,17 @@ const TaskForm = ({ onTaskCreated }) => {
             return;
         }
 
-        const newTask = {
-            id: Date.now(),
+        // El id único y la fecha de creación ahora los genera el reducer
+        // addTask (src/store/taskSlice.js), así que acá solo mandamos los
+        // datos que salen del formulario.
+        const newTaskInput = {
             title: title.trim(),
             description: description.trim(),
             category,
-            createdAt: new Date().toISOString(),
         };
 
-        console.log("Nueva tarea:", newTask);
-
-        // Enviamos la tarea a App.js
         if (onTaskCreated) {
-            onTaskCreated(newTask);
+            onTaskCreated(newTaskInput);
         }
 
         Alert.alert(

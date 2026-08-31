@@ -11,19 +11,20 @@ import {
 
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
 
 import TaskForm from "../components/TaskForm";
-import { useTasks } from "../context/TasksContext";
+import { addTask } from "../store/taskSlice";
 import colors from "../constants/colors";
 
 export default function AddTaskScreen() {
 
     const navigation = useNavigation();
-    const { addTask } = useTasks();
+    const dispatch = useDispatch();
 
-    const handleTaskCreated = (newTask) => {
+    const handleTaskCreated = (taskInput) => {
 
-        addTask(newTask);
+        dispatch(addTask(taskInput));
 
         // Redirección programática pedida por la consigna del checkpoint.
         navigation.navigate("TaskList");
