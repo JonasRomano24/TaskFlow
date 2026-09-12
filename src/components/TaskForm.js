@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
     View,
@@ -5,12 +6,15 @@ import {
     TextInput,
     TouchableOpacity,
     StyleSheet,
-    Alert,
 } from "react-native";
+import { useDispatch } from "react-redux";
 
 import colors from "../constants/colors";
+import { addTask } from "../store/taskSlice";
 
 const TaskForm = ({ onTaskCreated }) => {
+
+    const dispatch = useDispatch();
 
     const categories = [
         "Trabajo",
@@ -64,34 +68,42 @@ const TaskForm = ({ onTaskCreated }) => {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleAddTask = () => {
+    const handleAddTask = async () => {
 
         if (!validateForm()) {
             return;
         }
 
-        // El id único y la fecha de creación ahora los genera el reducer
-        // addTask (src/store/taskSlice.js), así que acá solo mandamos los
-        // datos que salen del formulario.
         const newTaskInput = {
             title: title.trim(),
             description: description.trim(),
             category,
         };
 
-        if (onTaskCreated) {
-            onTaskCreated(newTaskInput);
+        try {
+
+            // Envía la tarea a Redux y luego a Firestore
+            await dispatch(addTask(newTaskInput)).unwrap();
+
+            // Mantiene el callback existente de AddTaskScreen
+            if (onTaskCreated) {
+                onTaskCreated(newTaskInput);
+            }
+
+            // Limpiar formulario después de guardar correctamente
+            setTitle("");
+            setDescription("");
+            setCategory("Trabajo");
+            setErrors({});
+
+        } catch (error) {
+
+            console.error(
+                "Error al crear la tarea:",
+                error
+            );
+
         }
-
-        Alert.alert(
-            "Éxito",
-            "Tarea creada correctamente"
-        );
-
-        setTitle("");
-        setDescription("");
-        setCategory("Trabajo");
-        setErrors({});
     };
 
     return (
@@ -314,3 +326,4 @@ const styles = StyleSheet.create({
 });
 
 export default TaskForm;
+

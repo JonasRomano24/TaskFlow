@@ -35,9 +35,13 @@ const TaskDetailScreen = () => {
         : null;
 
     const handleToggle = () => {
-        dispatch(toggleTaskStatus(id));
+        dispatch(
+            toggleTaskStatus({
+                id: task.id,
+                completed: task.completed,
+            })
+        );
     };
-
     const handleDelete = () => {
         Alert.alert(
             "Eliminar tarea",

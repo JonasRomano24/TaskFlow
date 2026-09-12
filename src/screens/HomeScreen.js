@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from "react";
+import React, { useEffect, useLayoutEffect } from "react";
 import {
     View,
     Text,
@@ -18,6 +18,7 @@ import {
     selectFilter,
     setFilter,
     toggleTaskStatus,
+    fetchTasks,
 } from "../store/taskSlice";
 import colors from "../constants/colors";
 
@@ -36,7 +37,10 @@ const HomeScreen = () => {
     // sale del store: ni la lista ni el filtro viven en este componente.
     const tasks = useSelector(selectFilteredTasks);
     const activeFilter = useSelector(selectFilter);
-
+    
+    useEffect(() => {
+        dispatch(fetchTasks());
+    }, [dispatch]);
     // El botón "+ Nueva" ahora vive en el header nativo de la pantalla,
     // no en un header propio (así el título de arriba queda consistente
     // con el resto de las pantallas).
@@ -72,7 +76,14 @@ const HomeScreen = () => {
                 <TouchableOpacity
                     style={styles.checkbox}
                     hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                    onPress={() => dispatch(toggleTaskStatus(item.id))}
+                    onPress={() =>
+                        dispatch(
+                            toggleTaskStatus({
+                                id: item.id,
+                                completed: item.completed,
+                            })
+                        )
+                    }
                 >
                     <Ionicons
                         name={item.completed ? "checkmark-circle" : "ellipse-outline"}

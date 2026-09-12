@@ -7,6 +7,7 @@ import {
     ScrollView,
     TouchableOpacity,
     Text,
+    Alert,
 } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -22,14 +23,25 @@ export default function AddTaskScreen() {
     const navigation = useNavigation();
     const dispatch = useDispatch();
 
-    const handleTaskCreated = (taskInput) => {
+    const handleTaskCreated = async (taskInput) => {
+        try {
+            await dispatch(addTask(taskInput)).unwrap();
 
-        dispatch(addTask(taskInput));
+            Alert.alert(
+                "Éxito",
+                "Tarea creada correctamente"
+            );
 
-        // Redirección programática pedida por la consigna del checkpoint.
-        navigation.navigate("TaskList");
+            navigation.navigate("TaskList");
+        } catch (error) {
+            console.error("Error al crear la tarea:", error);
+
+            Alert.alert(
+                "Error",
+                "No se pudo guardar la tarea."
+            );
+        }
     };
-
     return (
 
         <SafeAreaView style={styles.safeArea}>
