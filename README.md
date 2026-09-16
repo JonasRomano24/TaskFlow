@@ -1,196 +1,269 @@
 # TaskFlow
 
-TaskFlow es una aplicación móvil desarrollada con React Native y Expo. Su objetivo es ayudar a los usuarios a organizar y gestionar sus tareas de forma sencilla e intuitiva.
+TaskFlow es una aplicación móvil desarrollada con **React Native y Expo** para organizar y gestionar tareas de forma sencilla e intuitiva.
+
+La aplicación permite registrarse e iniciar sesión, crear y administrar tareas personales, consultar su detalle, marcar tareas como completadas y mantener la información sincronizada con Firebase.
 
 ## Tecnologías utilizadas
 
-- React Native
-- Expo
-- JavaScript
+* React Native
+* Expo
+* JavaScript
+* Redux Toolkit
+* React Redux
+* React Navigation
+* Firebase Authentication
+* Cloud Firestore
+* AsyncStorage
+* Expo Image Picker
 
-## Ejecución del proyecto
+## Funcionalidades
 
-1. Instalar las dependencias:
+### Autenticación
+
+* Registro de nuevos usuarios.
+* Inicio de sesión mediante Firebase Authentication.
+* Persistencia de sesión.
+* Cierre de sesión.
+* Protección de las pantallas privadas.
+* Cada usuario accede únicamente a sus propios datos y tareas.
+
+### Gestión de tareas
+
+* Crear nuevas tareas.
+* Visualizar las tareas del usuario autenticado.
+* Consultar el detalle de una tarea.
+* Marcar tareas como completadas o pendientes.
+* Eliminar tareas.
+* Filtrar tareas por:
+
+  * Todas
+  * Pendientes
+  * Completadas
+
+Cada tarea se almacena en **Cloud Firestore** y queda asociada al usuario autenticado mediante su `userId`.
+
+### Sincronización en tiempo real
+
+TaskFlow utiliza listeners de **Firestore** para mantener las tareas sincronizadas automáticamente con la base de datos.
+
+Los cambios realizados en las tareas se reflejan en la aplicación mediante **Redux Toolkit**.
+
+### Perfil de usuario
+
+* Visualización de los datos del usuario.
+* Selección de una imagen desde la galería.
+* Solicitud de permisos para acceder a la galería.
+* Visualización de la imagen seleccionada.
+* Persistencia local de la imagen mediante **AsyncStorage**.
+* La imagen permanece disponible al cerrar e iniciar sesión nuevamente.
+
+### Navegación
+
+La aplicación utiliza **React Navigation** mediante:
+
+* Bottom Tab Navigator.
+* Native Stack Navigator.
+* Navegación entre lista de tareas, creación, detalle y perfil.
+* Navegación protegida según el estado de autenticación.
+
+## Estructura del proyecto
+
+```text
+TaskFlow/
+├── src/
+│   ├── assets/
+│   ├── components/
+│   ├── constants/
+│   ├── navigation/
+│   ├── screens/
+│   ├── services/
+│   └── store/
+├── docs/
+│   └── screenshots/
+├── App.js
+├── package.json
+├── .gitignore
+└── README.md
+```
+
+### Servicios
+
+#### `src/services/firebase.js`
+
+Contiene la configuración e inicialización de Firebase utilizada por la aplicación.
+
+Incluye las conexiones necesarias para:
+
+* Firebase Authentication.
+* Cloud Firestore.
+
+#### `src/services/authService.js`
+
+Gestiona las operaciones relacionadas con la autenticación:
+
+* Registro de usuarios.
+* Inicio de sesión.
+* Cierre de sesión.
+
+#### `src/services/taskService.js`
+
+Gestiona las operaciones relacionadas con las tareas:
+
+* Obtener tareas.
+* Crear tareas.
+* Actualizar tareas.
+* Eliminar tareas.
+* Sincronización en tiempo real mediante Firestore.
+
+### Estado global
+
+Redux Toolkit administra el estado global de la aplicación.
+
+```text
+src/store/
+├── authSlice.js
+├── store.js
+└── taskSlice.js
+```
+
+#### `authSlice.js`
+
+Gestiona el estado relacionado con el usuario autenticado.
+
+#### `taskSlice.js`
+
+Gestiona:
+
+* Lista de tareas.
+* Filtros.
+* Estado de carga.
+* Errores.
+* Actualización de tareas.
+
+También contiene las operaciones asincrónicas utilizadas para interactuar con Firestore.
+
+#### `store.js`
+
+Configura el Redux Store y registra los reducers de la aplicación.
+
+## Seguridad
+
+Las tareas almacenadas en Firestore están asociadas al usuario autenticado.
+
+Las reglas de seguridad de Firestore verifican que:
+
+* Solo los usuarios autenticados puedan acceder a los datos.
+* Cada usuario pueda consultar únicamente sus propias tareas.
+* Un usuario solo pueda crear tareas utilizando su propio `userId`.
+* Un usuario no pueda modificar el `userId` de una tarea.
+* Solo el propietario pueda actualizar o eliminar sus tareas.
+* Los datos del perfil estén protegidos mediante el UID del usuario.
+
+La configuración de Firebase se maneja mediante variables de entorno.
+
+El archivo `.env` está excluido del repositorio mediante `.gitignore` para evitar publicar información de configuración local.
+
+## Instalación
+
+Clonar el repositorio:
+
+```bash
+git clone https://github.com/JonasRomano24/TaskFlow.git
+```
+
+Ingresar al proyecto:
+
+```bash
+cd TaskFlow
+```
+
+Instalar las dependencias:
 
 ```bash
 npm install
 ```
 
-2. Iniciar la aplicación:
+## Configuración de Firebase
+
+Crear un archivo `.env` en la raíz del proyecto con las variables de configuración de Firebase:
+
+```env
+EXPO_PUBLIC_FIREBASE_API_KEY=tu_api_key
+EXPO_PUBLIC_FIREBASE_APP_ID=tu_app_id
+EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=tu_auth_domain
+EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=tu_messaging_sender_id
+EXPO_PUBLIC_FIREBASE_PROJECT_ID=tu_project_id
+EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=tu_storage_bucket
+```
+
+El archivo `.env` no debe subirse al repositorio.
+
+## Ejecución
+
+Iniciar el proyecto con:
 
 ```bash
 npx expo start
 ```
 
-3. Abrir la aplicación utilizando:
-- Expo Go.
-- Un emulador de Android.
-- Un simulador de iOS (macOS).
+Luego se puede ejecutar mediante:
 
-## Checkpoint 1
+* **Expo Go**
+* **Emulador de Android**
+* **Simulador de iOS** en macOS
 
-En este primer checkpoint se desarrolló:
+## Capturas de pantalla
 
-- Configuración inicial del proyecto con Expo.
-- Componente de bienvenida.
-- Pantalla principal con el título **TaskFlow**.
-- Subtítulo **"Checkpoint 1: Estructura Base"**.
-- Estilos implementados con `StyleSheet`.
+Las siguientes capturas muestran el funcionamiento de la versión final de TaskFlow.
 
-## Checkpoint 1 - Estructura Base
+### Autenticación
 
-En este checkpoint se desarrolló la arquitectura inicial de la aplicación TaskFlow siguiendo una organización profesional de carpetas.
+#### Inicio de sesión
 
-### Estructura implementada
+![Inicio de sesión](docs/screenshots/login.jpeg)
 
-Dentro de la carpeta `src` se crearon:
+#### Registro
 
-- `components/`
-  - `ProfileCard.js`
+![Registro](docs/screenshots/registro.jpeg)
 
-- `screens/`
-  - `HomeScreen.js`
-  - `ProfileScreen.js`
+### Gestión de tareas
 
-- `assets/`
-  - Recursos gráficos de la aplicación.
+#### Todas las tareas
 
-- `constants/`
-  - `colors.js` para centralizar los colores del diseño.
+![Todas las tareas](docs/screenshots/todas.jpeg)
 
-### Componentes desarrollados
+#### Tareas pendientes
 
-#### ProfileCard
+![Tareas pendientes](docs/screenshots/pendiente.jpeg)
 
-Se creó un componente reutilizable para mostrar información del usuario.
+#### Tareas completadas
 
-Características:
+![Tareas completadas](docs/screenshots/filtro-completada.jpeg)
 
-- Recibe datos mediante props:
-  - `name`
-  - `role`
-  - `image`
+#### Crear nueva tarea
 
-- Utiliza el componente `Image` de React Native para mostrar el avatar.
-- Implementa estilos con `StyleSheet.create`.
-- Diseño con tarjeta, bordes redondeados, padding y sombras.
+![Nueva tarea](docs/screenshots/nueva-tarea.jpeg)
 
-### Pantallas creadas
+#### Detalle de tarea
 
-#### HomeScreen
+![Detalle de tarea](docs/screenshots/detalle-tarea.jpeg)
 
-Pantalla inicial preparada para mostrar las tareas del usuario.
+#### Tarea completada
 
-#### ProfileScreen
+![Tarea completada](docs/screenshots/detalle-tarea-completada.jpeg)
 
-Pantalla que renderiza el componente `ProfileCard` con datos de prueba:
+### Perfil
 
-- Nombre del usuario.
-- Rol.
-- Imagen de perfil.
+![Perfil de usuario](docs/screenshots/perfil.jpeg)
 
-### Sistema de estilos
+## Proyecto
 
-Se creó un archivo de constantes para mantener una identidad visual consistente:
+**Repositorio:**
+https://github.com/JonasRomano24/TaskFlow
 
-- Colores principales.
-- Fondo.
-- Texto.
-- Elementos de tarjeta.
+## Autor
 
-### Visualización
+**Jonas Romano**
 
-Actualmente la aplicación permite visualizar la `ProfileScreen` funcionando correctamente mediante Expo.
-
-## Checkpoint 2 - Navegación
-
-Hasta este checkpoint el cambio de pantalla lo hacía a mano: un estado en
-`App.js` que decidía si mostrar "home" o "add", y adentro de `HomeScreen` otro
-estado más para mostrar el detalle de una tarea. Andaba, pero no era
-navegación real. Acá lo reemplacé por React Navigation.
-
-Quedó así:
-
-- Un Tab Navigator arriba de todo, con las pestañas **Home** y **Perfil**.
-- Adentro de Home metí un Stack Navigator: `TaskList` → `TaskDetail` → `TaskForm`.
-
-Ahora, al tocar una tarea, la pantalla de detalle se apila arriba de la
-lista, y si volvés atrás (con la flecha del header o con el botón "Volver")
-te devuelve exactamente a donde estabas. La pestaña Perfil queda afuera de
-todo ese stack, aparte.
-
-**Archivos nuevos:**
-
-- `src/navigation/AppNavigator.js`: el Tab Navigator y el Stack anidado.
-- `src/screens/TaskDetailScreen.js`: antes era un componente que `HomeScreen`
-  mostraba a mano con un estado local; ahora es una pantalla que recibe los
-  datos por parámetros.
-- `src/context/TasksContext.js`: para que `HomeScreen` y `AddTaskScreen`
-  compartan la lista de tareas sin pasarse props entre pantallas. Esto lo voy
-  a reemplazar por Redux en el próximo módulo.
-
-Al tocar una tarea en la lista:
-
-```js
-navigation.navigate('TaskDetail', { id: item.id, title: item.title });
-```
-
-Y `TaskDetailScreen` los recupera con `useRoute()`.
-
-Cuando guardás una tarea nueva, en vez de volver con un `onBack` como antes,
-ahora hago:
-
-```js
-navigation.navigate('TaskList');
-```
-
-## Checkpoint 3 - Estado Global con Redux Toolkit
-
-Hasta acá las tareas vivían en `TasksContext` (un Context + `useState`), que
-el propio código dejaba claro que era temporal: "un puente hasta el Módulo 6".
-En este checkpoint ese puente se cae y todo pasa a un store de Redux Toolkit.
-
-Quedó así:
-
-- `src/store/taskSlice.js`: el slice `tasks`, con estado `{ items, filter }`
-  y los reducers `addTask`, `toggleTaskStatus`, `deleteTask` y `setFilter`.
-  El `id` único y la fecha de creación de cada tarea los genera el propio
-  reducer (con `prepare`), no el componente que dispara la acción.
-- `src/store/store.js`: `configureStore` con el reducer `tasks`.
-- `App.js`: ahora envuelve todo con `<Provider store={store}>` en vez de
-  `<TasksProvider>`.
-
-Las pantallas dejaron de manejar la lista con `useState`:
-
-- `HomeScreen` lee las tareas con `useSelector` (ya filtradas por el
-  filtro activo) y tiene tres chips (Todas / Pendientes / Completadas) que
-  hacen `dispatch(setFilter(...))`.
-- `AddTaskScreen` reemplazó `addTask` del Context por
-  `dispatch(addTask(...))`.
-- `TaskDetailScreen` agrega dos acciones nuevas: marcar la tarea como
-  completada/pendiente (`toggleTaskStatus`) y eliminarla (`deleteTask`).
-  Como todo sale del store, al volver a la lista el cambio ya está
-  reflejado sin pasar nada por props ni por parámetros de navegación.
-
-El filtro también vive en el store, así que si lo cambio en Home y navego
-a otra pestaña y vuelvo, sigue seleccionado — no se resetea como pasaría
-con un estado local del componente.
-
-**Dependencias nuevas:** `@reduxjs/toolkit` y `react-redux`.
-
-## Capturas
-
-**Lista vacía**
-![Lista vacía](docs/screenshots/01-lista-vacia.jpg)
-
-**Nueva tarea**
-![Nueva tarea](docs/screenshots/02-nueva-tarea.jpg)
-
-**Mis tareas**
-![Mis tareas](docs/screenshots/03-mis-tareas.jpg)
-
-**Detalle de tarea**
-![Detalle de tarea](docs/screenshots/04-detalle-tarea.jpg)
-
-**Mi Perfil**
-![Mi Perfil](docs/screenshots/05-mi-perfil.jpg)
+Proyecto desarrollado como parte de la formación en desarrollo de aplicaciones móviles.
