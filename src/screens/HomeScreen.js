@@ -18,8 +18,9 @@ import {
     selectFilter,
     setFilter,
     toggleTaskStatus,
-    fetchTasks,
+    setTasks,
 } from "../store/taskSlice";
+import { subscribeToTasks } from "../services/taskService";
 import colors from "../constants/colors";
 
 const FILTERS = [
@@ -32,18 +33,23 @@ const HomeScreen = () => {
 
     const navigation = useNavigation();
     const dispatch = useDispatch();
-
-    // Antes esto salía de useTasks() (Context + useState local). Ahora
-    // sale del store: ni la lista ni el filtro viven en este componente.
     const tasks = useSelector(selectFilteredTasks);
     const activeFilter = useSelector(selectFilter);
-    
+    const user = useSelector((state) => state.auth.user);
+
     useEffect(() => {
-        dispatch(fetchTasks());
-    }, [dispatch]);
-    // El botón "+ Nueva" ahora vive en el header nativo de la pantalla,
-    // no en un header propio (así el título de arriba queda consistente
-    // con el resto de las pantallas).
+        if (!user?.uid) return;
+
+        const unsubscribe = subscribeToTasks(
+            user.uid,
+            (tasks) => {
+                dispatch(setTasks(tasks));
+            }
+        );
+
+        return unsubscribe;
+    }, [dispatch, user?.uid]);
+
     useLayoutEffect(() => {
         navigation.setOptions({
             headerRight: () => (

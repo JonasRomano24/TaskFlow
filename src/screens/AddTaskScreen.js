@@ -12,7 +12,7 @@ import {
 
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import TaskForm from "../components/TaskForm";
 import { addTask } from "../store/taskSlice";
@@ -22,10 +22,16 @@ export default function AddTaskScreen() {
 
     const navigation = useNavigation();
     const dispatch = useDispatch();
+    const user = useSelector((state) => state.auth.user);
 
     const handleTaskCreated = async (taskInput) => {
         try {
-            await dispatch(addTask(taskInput)).unwrap();
+            await dispatch(
+                addTask({
+                    task: taskInput,
+                    userId: user.uid,
+                })
+            ).unwrap();
 
             Alert.alert(
                 "Éxito",

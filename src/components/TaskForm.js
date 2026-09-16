@@ -7,14 +7,11 @@ import {
     TouchableOpacity,
     StyleSheet,
 } from "react-native";
-import { useDispatch } from "react-redux";
 
 import colors from "../constants/colors";
-import { addTask } from "../store/taskSlice";
+
 
 const TaskForm = ({ onTaskCreated }) => {
-
-    const dispatch = useDispatch();
 
     const categories = [
         "Trabajo",
@@ -82,15 +79,10 @@ const TaskForm = ({ onTaskCreated }) => {
 
         try {
 
-            // Envía la tarea a Redux y luego a Firestore
-            await dispatch(addTask(newTaskInput)).unwrap();
-
-            // Mantiene el callback existente de AddTaskScreen
             if (onTaskCreated) {
-                onTaskCreated(newTaskInput);
+                await onTaskCreated(newTaskInput);
             }
 
-            // Limpiar formulario después de guardar correctamente
             setTitle("");
             setDescription("");
             setCategory("Trabajo");

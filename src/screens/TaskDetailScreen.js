@@ -24,7 +24,7 @@ const TaskDetailScreen = () => {
     // Se lee directo del store con useSelector: si esta tarea cambia
     // (por ejemplo, se completa desde acá), HomeScreen se entera solo,
     // sin que nadie tenga que "avisarle".
-    const task = useSelector(selectTaskById(id));
+    const task = useSelector((state) => selectTaskById(state, id));
 
     const formattedDate = task
         ? new Date(task.createdAt).toLocaleDateString("es-UY", {

@@ -6,6 +6,8 @@ import { register } from "../services/authService";
 
 const RegisterScreen = ({ navigation }) => {
     const [email, setEmail] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -21,7 +23,7 @@ const RegisterScreen = ({ navigation }) => {
         setLoading(true);
 
         try {
-            await register(email, password);
+            await register(email, password, firstName, lastName);
             // Igual que en Login: el onAuthStateChanged se encarga de la navegación.
         } catch (err) {
             setError(traducirError(err.code));
@@ -35,6 +37,20 @@ const RegisterScreen = ({ navigation }) => {
             <Text style={styles.title}>Crear cuenta</Text>
 
             {error && <Text style={styles.error}>{error}</Text>}
+
+            <TextInput
+                style={styles.input}
+                placeholder="Nombre"
+                value={firstName}
+                onChangeText={setFirstName}
+            />
+
+            <TextInput
+                style={styles.input}
+                placeholder="Apellido"
+                value={lastName}
+                onChangeText={setLastName}
+            />
 
             <TextInput
                 style={styles.input}
