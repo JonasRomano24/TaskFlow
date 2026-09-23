@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "task-flow",
+    "name": "TaskFlow",
     "slug": "task-flow",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -13,9 +13,14 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.jonasromano.taskflow",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
+      "package": "com.jonasromano.taskflow",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -27,6 +32,11 @@
     },
     "plugins": [
       "expo-status-bar"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "aded0806-6854-4fb8-aa99-bfbd028790ec"
+      }
+    }
   }
 }
