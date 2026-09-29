@@ -1,269 +1,648 @@
-# TaskFlow
+# 📱 TaskFlow
 
-TaskFlow es una aplicación móvil desarrollada con **React Native y Expo** para organizar y gestionar tareas de forma sencilla e intuitiva.
+TaskFlow es una aplicación móvil de gestión de tareas desarrollada con **React Native y Expo**.
 
-La aplicación permite registrarse e iniciar sesión, crear y administrar tareas personales, consultar su detalle, marcar tareas como completadas y mantener la información sincronizada con Firebase.
+El proyecto permite a los usuarios registrarse, iniciar sesión, crear y administrar tareas, consultar su detalle, completar tareas y mantener la información sincronizada mediante **Firebase Cloud Firestore**.
 
-## Tecnologías utilizadas
+Además, cuenta con gestión de perfil y selección de imagen mediante `Expo Image Picker`.
 
-* React Native
-* Expo
-* JavaScript
-* Redux Toolkit
-* React Redux
-* React Navigation
-* Firebase Authentication
-* Cloud Firestore
-* AsyncStorage
-* Expo Image Picker
+---
 
-## Funcionalidades
+# 🚀 Tecnologías utilizadas
 
-### Autenticación
+- React Native
+- Expo
+- JavaScript
+- Redux Toolkit
+- React Redux
+- React Navigation
+- Firebase Authentication
+- Cloud Firestore
+- AsyncStorage
+- Expo Image Picker
 
-* Registro de nuevos usuarios.
-* Inicio de sesión mediante Firebase Authentication.
-* Persistencia de sesión.
-* Cierre de sesión.
-* Protección de las pantallas privadas.
-* Cada usuario accede únicamente a sus propios datos y tareas.
+---
 
-### Gestión de tareas
+# 📋 Funcionalidades
 
-* Crear nuevas tareas.
-* Visualizar las tareas del usuario autenticado.
-* Consultar el detalle de una tarea.
-* Marcar tareas como completadas o pendientes.
-* Eliminar tareas.
-* Filtrar tareas por:
+## 🔐 Autenticación
 
-  * Todas
-  * Pendientes
-  * Completadas
+La aplicación utiliza **Firebase Authentication** para gestionar los usuarios.
 
-Cada tarea se almacena en **Cloud Firestore** y queda asociada al usuario autenticado mediante su `userId`.
+Funcionalidades:
 
-### Sincronización en tiempo real
+- Registro de nuevos usuarios.
+- Inicio de sesión.
+- Persistencia de sesión.
+- Cierre de sesión.
+- Identificación del usuario mediante su UID.
+- Protección de los datos asociados a cada usuario.
 
-TaskFlow utiliza listeners de **Firestore** para mantener las tareas sincronizadas automáticamente con la base de datos.
+---
 
-Los cambios realizados en las tareas se reflejan en la aplicación mediante **Redux Toolkit**.
+## 📝 Gestión de tareas
 
-### Perfil de usuario
+TaskFlow permite administrar tareas personales.
 
-* Visualización de los datos del usuario.
-* Selección de una imagen desde la galería.
-* Solicitud de permisos para acceder a la galería.
-* Visualización de la imagen seleccionada.
-* Persistencia local de la imagen mediante **AsyncStorage**.
-* La imagen permanece disponible al cerrar e iniciar sesión nuevamente.
+Funcionalidades:
 
-### Navegación
+- Crear nuevas tareas.
+- Visualizar tareas.
+- Consultar el detalle de una tarea.
+- Marcar tareas como completadas.
+- Mantener tareas pendientes.
+- Eliminar tareas.
+- Filtrar tareas.
+- Asociar cada tarea al usuario autenticado.
+- Almacenar las tareas en Cloud Firestore.
 
-La aplicación utiliza **React Navigation** mediante:
+Las tareas utilizan diferentes categorías:
 
-* Bottom Tab Navigator.
-* Native Stack Navigator.
-* Navegación entre lista de tareas, creación, detalle y perfil.
-* Navegación protegida según el estado de autenticación.
+- Trabajo
+- Estudio
+- Personal
 
-## Estructura del proyecto
+También se aplican validaciones al momento de crear una tarea.
+
+---
+
+## 🔎 Filtros de tareas
+
+La pantalla principal permite filtrar las tareas según su estado:
+
+- Todas
+- Pendientes
+- Completadas
+
+Los filtros son administrados mediante el estado global de Redux.
+
+---
+
+## ☁️ Firebase y Firestore
+
+Firebase se utiliza como backend de la aplicación.
+
+### Firebase Authentication
+
+Se utiliza para:
+
+- Registrar usuarios.
+- Iniciar sesión.
+- Mantener la sesión.
+- Cerrar sesión.
+
+### Cloud Firestore
+
+Las tareas se almacenan en Firestore y se asocian al usuario autenticado mediante su `userId`.
+
+Los documentos de las tareas contienen información como:
+
+- `title`
+- `description`
+- `category`
+- `userId`
+- `completed`
+- `createdAt`
+
+La aplicación utiliza una suscripción a Firestore para mantener las tareas sincronizadas en tiempo real.
+
+---
+
+# 🏗️ Arquitectura del proyecto
+
+El proyecto está organizado separando las responsabilidades de la aplicación entre componentes, pantallas, navegación, servicios y estado global.
 
 ```text
 TaskFlow/
-├── src/
-│   ├── assets/
-│   ├── components/
-│   ├── constants/
-│   ├── navigation/
-│   ├── screens/
-│   ├── services/
-│   └── store/
+│
 ├── docs/
 │   └── screenshots/
-├── App.js
-├── package.json
+│
+├── src/
+│   ├── assets/
+│   │
+│   ├── components/
+│   │
+│   ├── constants/
+│   │
+│   ├── navigation/
+│   │
+│   ├── screens/
+│   │
+│   ├── services/
+│   │
+│   └── store/
+│
+├── .env.example
 ├── .gitignore
+├── App.js
+├── app.json
+├── eas.json
+├── index.js
+├── package.json
+├── package-lock.json
 └── README.md
 ```
 
-### Servicios
+---
 
-#### `src/services/firebase.js`
+# 📂 Estructura principal
 
-Contiene la configuración e inicialización de Firebase utilizada por la aplicación.
+## `src/components`
 
-Incluye las conexiones necesarias para:
+Contiene los componentes reutilizables de la aplicación.
 
-* Firebase Authentication.
-* Cloud Firestore.
+Entre ellos se encuentran componentes relacionados con:
 
-#### `src/services/authService.js`
+- Tareas.
+- Formularios.
+- Perfil.
+- Visualización de información.
 
-Gestiona las operaciones relacionadas con la autenticación:
+---
 
-* Registro de usuarios.
-* Inicio de sesión.
-* Cierre de sesión.
+## `src/screens`
 
-#### `src/services/taskService.js`
+Contiene las diferentes pantallas de TaskFlow.
 
-Gestiona las operaciones relacionadas con las tareas:
+Entre ellas:
 
-* Obtener tareas.
-* Crear tareas.
-* Actualizar tareas.
-* Eliminar tareas.
-* Sincronización en tiempo real mediante Firestore.
+- Pantalla de inicio.
+- Pantalla de autenticación.
+- Pantalla de registro.
+- Pantalla para agregar tareas.
+- Pantalla de detalle de tarea.
+- Pantalla de perfil.
 
-### Estado global
+---
 
-Redux Toolkit administra el estado global de la aplicación.
+## `src/navigation`
+
+Contiene la configuración de navegación de la aplicación.
+
+Se utiliza:
+
+- `Native Stack Navigator`
+- `Bottom Tab Navigator`
+
+La navegación permite acceder a las diferentes secciones de la aplicación y administrar el flujo entre pantallas.
+
+---
+
+## `src/services`
+
+Contiene la lógica encargada de comunicarse con los servicios externos.
+
+### Firebase
+
+Se encarga de inicializar y configurar Firebase para utilizar:
+
+- Authentication.
+- Cloud Firestore.
+
+### Task Service
+
+Centraliza las operaciones relacionadas con las tareas:
+
+- Obtener tareas.
+- Crear tareas.
+- Actualizar tareas.
+- Eliminar tareas.
+- Suscribirse a los cambios de Firestore.
+
+---
+
+# 🔄 Redux Toolkit
+
+TaskFlow utiliza **Redux Toolkit** para administrar el estado global de la aplicación.
+
+El Store centraliza la información necesaria para que diferentes pantallas y componentes puedan acceder al estado de la aplicación.
+
+## Estado de autenticación
+
+El estado de autenticación permite mantener la información del usuario actual.
+
+## Estado de tareas
+
+El estado de tareas administra:
+
+- Lista de tareas.
+- Filtro seleccionado.
+- Estado de las tareas.
+- Operaciones asincrónicas.
+- Actualización de datos provenientes de Firestore.
+
+La comunicación entre Redux y Firestore se realiza mediante los servicios definidos en `src/services`.
+
+---
+
+# 💾 Persistencia
+
+La aplicación utiliza diferentes mecanismos de persistencia.
+
+## Firestore
+
+Las tareas se almacenan en **Cloud Firestore**, permitiendo conservar los datos y sincronizarlos con la aplicación.
+
+## AsyncStorage
+
+`AsyncStorage` se utiliza para conservar información local de la aplicación.
+
+Entre otros usos, permite mantener la imagen de perfil seleccionada por el usuario.
+
+---
+
+# 👤 Perfil de usuario
+
+La aplicación cuenta con una sección de perfil.
+
+Desde esta sección el usuario puede:
+
+- Consultar su información.
+- Seleccionar una imagen desde la galería.
+- Cambiar su imagen de perfil.
+- Mantener la imagen seleccionada mediante almacenamiento local.
+
+Para seleccionar la imagen se utiliza:
 
 ```text
-src/store/
-├── authSlice.js
-├── store.js
-└── taskSlice.js
+expo-image-picker
 ```
 
-#### `authSlice.js`
+La aplicación solicita los permisos necesarios para acceder a las imágenes del dispositivo.
 
-Gestiona el estado relacionado con el usuario autenticado.
+---
 
-#### `taskSlice.js`
+# 🔐 Seguridad de Firestore
 
-Gestiona:
+Las reglas de Firestore se utilizan para restringir el acceso a los datos de los usuarios.
 
-* Lista de tareas.
-* Filtros.
-* Estado de carga.
-* Errores.
-* Actualización de tareas.
+La aplicación trabaja utilizando el UID del usuario autenticado.
 
-También contiene las operaciones asincrónicas utilizadas para interactuar con Firestore.
+Esto permite establecer una relación entre:
 
-#### `store.js`
+```text
+Usuario
+   ↓
+userId
+   ↓
+Tareas del usuario
+```
 
-Configura el Redux Store y registra los reducers de la aplicación.
+De esta forma, las operaciones sobre las tareas se realizan asociándolas al usuario correspondiente.
 
-## Seguridad
+---
 
-Las tareas almacenadas en Firestore están asociadas al usuario autenticado.
+# ⚙️ Variables de entorno
 
-Las reglas de seguridad de Firestore verifican que:
+El proyecto utiliza variables de entorno para configurar Firebase.
 
-* Solo los usuarios autenticados puedan acceder a los datos.
-* Cada usuario pueda consultar únicamente sus propias tareas.
-* Un usuario solo pueda crear tareas utilizando su propio `userId`.
-* Un usuario no pueda modificar el `userId` de una tarea.
-* Solo el propietario pueda actualizar o eliminar sus tareas.
-* Los datos del perfil estén protegidos mediante el UID del usuario.
+El repositorio incluye:
 
-La configuración de Firebase se maneja mediante variables de entorno.
+```text
+.env.example
+```
 
-El archivo `.env` está excluido del repositorio mediante `.gitignore` para evitar publicar información de configuración local.
+Este archivo sirve como plantilla para configurar las variables necesarias.
 
-## Instalación
+Las variables utilizadas son:
 
-Clonar el repositorio:
+```env
+EXPO_PUBLIC_FIREBASE_API_KEY=
+EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=
+EXPO_PUBLIC_FIREBASE_PROJECT_ID=
+EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=
+EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+EXPO_PUBLIC_FIREBASE_APP_ID=
+```
+
+## Configuración
+
+Después de clonar el proyecto, crear un archivo:
+
+```text
+.env
+```
+
+en la raíz del proyecto y completar las variables con la configuración correspondiente del proyecto de Firebase.
+
+El archivo `.env` no debe subirse al repositorio.
+
+Para configurar el proyecto se puede utilizar `.env.example` como referencia.
+
+---
+
+# 📦 Instalación
+
+## 1. Clonar el repositorio
 
 ```bash
 git clone https://github.com/JonasRomano24/TaskFlow.git
 ```
 
-Ingresar al proyecto:
+## 2. Ingresar al proyecto
 
 ```bash
 cd TaskFlow
 ```
 
-Instalar las dependencias:
+## 3. Instalar las dependencias
 
 ```bash
 npm install
 ```
 
-## Configuración de Firebase
+## 4. Configurar Firebase
 
-Crear un archivo `.env` en la raíz del proyecto con las variables de configuración de Firebase:
+Crear el archivo `.env` a partir de `.env.example` y completar las variables de Firebase.
 
-```env
-EXPO_PUBLIC_FIREBASE_API_KEY=tu_api_key
-EXPO_PUBLIC_FIREBASE_APP_ID=tu_app_id
-EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=tu_auth_domain
-EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=tu_messaging_sender_id
-EXPO_PUBLIC_FIREBASE_PROJECT_ID=tu_project_id
-EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=tu_storage_bucket
-```
-
-El archivo `.env` no debe subirse al repositorio.
-
-## Ejecución
-
-Iniciar el proyecto con:
+## 5. Iniciar Expo
 
 ```bash
 npx expo start
 ```
 
-Luego se puede ejecutar mediante:
+---
 
-* **Expo Go**
-* **Emulador de Android**
-* **Simulador de iOS** en macOS
+# ▶️ Ejecución
 
-## Capturas de pantalla
+Una vez iniciado Expo, la aplicación puede ejecutarse mediante:
 
-Las siguientes capturas muestran el funcionamiento de la versión final de TaskFlow.
+- Expo Go.
+- Emulador Android.
+- Dispositivo Android compatible.
+- Simulador iOS en macOS.
 
-### Autenticación
+Para iniciar directamente en Android:
 
-#### Inicio de sesión
+```bash
+npm run android
+```
+
+Para iniciar la aplicación en web:
+
+```bash
+npm run web
+```
+
+---
+
+# 📱 Build de Android
+
+La aplicación fue compilada utilizando **Expo Application Services (EAS)**.
+
+El APK generado permite instalar y probar TaskFlow directamente en un dispositivo Android.
+
+### APK
+
+[Descargar / instalar APK de TaskFlow](https://expo.dev/artifacts/eas/mkL01dL66Ks0TvkN-Odld3U99juvbSLN_qL2pYamGC0.apk)
+
+---
+
+# 📸 Evidencia visual
+
+Las siguientes capturas muestran las principales funcionalidades implementadas en TaskFlow.
+
+Todas las imágenes se encuentran dentro de:
+
+```text
+docs/screenshots/
+```
+
+---
+
+## 🔐 Inicio de sesión
+
+Pantalla de inicio de sesión mediante Firebase Authentication.
 
 ![Inicio de sesión](docs/screenshots/login.jpeg)
 
-#### Registro
+---
+
+## 📝 Registro
+
+Pantalla para registrar un nuevo usuario.
 
 ![Registro](docs/screenshots/registro.jpeg)
 
-### Gestión de tareas
+---
 
-#### Todas las tareas
+## 📋 Todas las tareas
+
+Visualización de las tareas disponibles para el usuario.
 
 ![Todas las tareas](docs/screenshots/todas.jpeg)
 
-#### Tareas pendientes
+---
 
-![Tareas pendientes](docs/screenshots/pendiente.jpeg)
+## ➕ Nueva tarea
 
-#### Tareas completadas
-
-![Tareas completadas](docs/screenshots/filtro-completada.jpeg)
-
-#### Crear nueva tarea
+Formulario utilizado para crear una nueva tarea.
 
 ![Nueva tarea](docs/screenshots/nueva-tarea.jpeg)
 
-#### Detalle de tarea
+---
+
+## ⏳ Tareas pendientes
+
+Visualización de las tareas que todavía no fueron completadas.
+
+![Tareas pendientes](docs/screenshots/pendiente.jpeg)
+
+---
+
+## ✅ Tareas completadas
+
+Filtro que permite visualizar las tareas completadas.
+
+![Filtro de tareas completadas](docs/screenshots/filtro-completada.jpeg)
+
+---
+
+## 🔎 Detalle de tarea
+
+Pantalla donde se puede consultar la información completa de una tarea.
 
 ![Detalle de tarea](docs/screenshots/detalle-tarea.jpeg)
 
-#### Tarea completada
+---
 
-![Tarea completada](docs/screenshots/detalle-tarea-completada.jpeg)
+## ✅ Detalle de tarea completada
 
-### Perfil
+Visualización del detalle de una tarea después de marcarla como completada.
 
-![Perfil de usuario](docs/screenshots/perfil.jpeg)
+![Detalle de tarea completada](docs/screenshots/detalle-tarea-completada.jpeg)
 
-## Proyecto
+---
 
-**Repositorio:**
+## 👤 Perfil
+
+Pantalla de perfil del usuario.
+
+![Perfil](docs/screenshots/perfil.jpeg)
+
+---
+
+# 🔄 Flujo principal de la aplicación
+
+El funcionamiento general de TaskFlow puede resumirse de la siguiente manera:
+
+```text
+           Registro / Login
+                  │
+                  ▼
+        Usuario autenticado
+                  │
+                  ▼
+          Pantalla principal
+                  │
+          ┌───────┴───────┐
+          │               │
+          ▼               ▼
+    Lista de tareas     Perfil
+          │
+    ┌─────┼──────┐
+    │     │      │
+    ▼     ▼      ▼
+ Crear  Detalle  Filtros
+ tarea   tarea
+    │     │      │
+    └─────┴──────┘
+          │
+          ▼
+       Firestore
+          │
+          ▼
+    Sincronización
+          │
+          ▼
+        Redux
+          │
+          ▼
+     Interfaz UI
+```
+
+---
+
+# 🧪 Validaciones
+
+El formulario de creación de tareas cuenta con validaciones para evitar el ingreso de información insuficiente.
+
+Entre las validaciones implementadas:
+
+- El título debe cumplir con una longitud mínima.
+- La descripción debe cumplir con una longitud mínima.
+- Se selecciona una categoría para cada tarea.
+- Se evita crear tareas con información inválida.
+
+---
+
+# 🗂️ Modelo de datos
+
+Las tareas almacenadas en Firestore utilizan una estructura similar a:
+
+```javascript
+{
+  title: "Título de la tarea",
+  description: "Descripción de la tarea",
+  category: "Trabajo",
+  userId: "UID_DEL_USUARIO",
+  completed: false,
+  createdAt: ...
+}
+```
+
+El campo `userId` permite relacionar cada tarea con el usuario autenticado.
+
+---
+
+# 🔄 Sincronización con Firestore
+
+TaskFlow utiliza una suscripción a los cambios de Firestore.
+
+Cuando se produce una modificación en las tareas:
+
+```text
+Firestore
+    ↓
+Listener
+    ↓
+taskService
+    ↓
+Redux
+    ↓
+Componentes
+    ↓
+Interfaz actualizada
+```
+
+Esto permite mantener actualizada la lista de tareas sin necesidad de recargar manualmente la aplicación.
+
+---
+
+# 📚 Dependencias principales
+
+Las principales tecnologías y librerías utilizadas se encuentran definidas en `package.json`.
+
+Entre ellas:
+
+- Expo.
+- React Native.
+- Redux Toolkit.
+- React Redux.
+- Firebase.
+- React Navigation.
+- AsyncStorage.
+- Expo Image Picker.
+
+Las versiones exactas utilizadas pueden consultarse directamente en:
+
+```text
+package.json
+```
+
+---
+
+# 💻 Código fuente
+
+El código fuente completo del proyecto se encuentra disponible en el siguiente repositorio:
+
+**GitHub — TaskFlow**
+
 https://github.com/JonasRomano24/TaskFlow
 
-## Autor
+El repositorio contiene:
+
+- Código fuente.
+- Componentes.
+- Pantallas.
+- Navegación.
+- Redux Toolkit.
+- Servicios Firebase.
+- Configuración de Firestore.
+- Configuración de Expo.
+- `.env.example`.
+- Capturas de pantalla.
+- Documentación técnica.
+
+---
+
+# 📱 Entrega
+
+## Código fuente
+
+https://github.com/JonasRomano24/TaskFlow
+
+## APK Android
+
+https://expo.dev/artifacts/eas/mkL01dL66Ks0TvkN-Odld3U99juvbSLN_qL2pYamGC0.apk
+
+---
+
+# 👨‍💻 Autor
 
 **Jonas Romano**
 
-Proyecto desarrollado como parte de la formación en desarrollo de aplicaciones móviles.
+Proyecto desarrollado como parte de la formación en Desarrollo de Aplicaciones.
+
+**TaskFlow — Aplicación móvil de gestión de tareas**
